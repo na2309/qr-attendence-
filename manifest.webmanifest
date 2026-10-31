@@ -1,0 +1,10 @@
+{
+  "name": "QR Attendance Manager",
+  "short_name": "Attendance",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f5f7fb",
+  "theme_color": "#14213d",
+  "description": "Offline-capable student QR attendance manager",
+  "icons": []
+}

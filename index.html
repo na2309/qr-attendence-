@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#14213d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>QR Attendance</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div><div class="eyebrow">STUDENT MANAGEMENT</div><h1>QR Attendance</h1></div>
+  <span id="connection" class="badge">Checking connection…</span>
+</header>
+<main>
+  <section class="hero">
+    <div><p class="eyebrow">YOUR CLASSROOM, ORGANIZED</p><h2>Attendance made simple.</h2>
+    <p>Create student IDs, scan printed QR codes, and keep records online or offline.</p></div>
+    <div class="hero-stat"><strong id="totalStudents">0</strong><span>Students</span></div>
+  </section>
+
+  <nav class="tabs" aria-label="Main sections">
+    <button class="tab active" data-tab="dashboard">Overview</button>
+    <button class="tab" data-tab="students">Students</button>
+    <button class="tab" data-tab="scan">Take attendance</button>
+    <button class="tab" data-tab="reports">Reports</button>
+    <button class="tab" data-tab="settings">Settings</button>
+  </nav>
+
+  <section id="dashboard" class="panel active">
+    <div class="section-heading"><div><p class="eyebrow">OVERVIEW</p><h2>Class snapshot</h2></div><button class="primary" id="newSessionBtn">＋ New lecture</button></div>
+    <div class="stats">
+      <article class="stat-card"><span>Students</span><strong id="dashStudents">0</strong></article>
+      <article class="stat-card"><span>Present today</span><strong id="dashPresent">0</strong></article>
+      <article class="stat-card"><span>Lectures</span><strong id="dashSessions">0</strong></article>
+    </div>
+    <article class="card">
+      <div class="section-heading"><div><h3>Current lecture</h3><p class="muted" id="currentSessionText">No lecture selected</p></div><span id="sessionBadge" class="badge neutral">Not started</span></div>
+      <button class="primary wide" id="goScanBtn">Open scanner</button>
+    </article>
+    <article class="card"><h3>Quick start</h3><ol class="steps"><li>Add your 50 students or import a CSV file.</li><li>Generate and print their QR ID cards.</li><li>Create a lecture and scan each student's paper ID.</li><li>Export the attendance report when finished.</li></ol></article>
+  </section>
+
+  <section id="students" class="panel">
+    <div class="section-heading"><div><p class="eyebrow">ROSTER</p><h2>Students</h2><p class="muted">Each student receives a permanent, unique QR code.</p></div></div>
+    <form id="studentForm" class="card form-grid">
+      <label>Student name<input id="studentName" required maxlength="80" placeholder="e.g. Ahmed Mohamed"></label>
+      <label>Student number<input id="studentNumber" required maxlength="40" placeholder="e.g. 2024001"></label>
+      <button class="primary" type="submit">Add student</button>
+    </form>
+    <div class="toolbar">
+      <input id="studentSearch" placeholder="Search name or student number…" aria-label="Search students">
+      <button class="secondary" id="printCardsBtn">Print ID cards</button>
+      <button class="secondary" id="exportStudentsBtn">Export CSV</button>
+    </div>
+    <div class="toolbar"><label class="file-button">Import students CSV<input type="file" id="importStudents" accept=".csv,text/csv"></label><span class="muted small">CSV columns: name, student_number</span></div>
+    <div id="studentList" class="student-list empty">No students yet. Add your first student above.</div>
+  </section>
+
+  <section id="scan" class="panel">
+    <div class="section-heading"><div><p class="eyebrow">LIVE CHECK-IN</p><h2>Take attendance</h2><p class="muted">Use your iPhone camera to scan the printed student QR codes.</p></div></div>
+    <article class="card">
+      <label>Lecture name<input id="sessionName" placeholder="e.g. Digital Logic — Lecture 1"></label>
+      <div class="toolbar"><button class="primary" id="startSessionBtn">Start new lecture</button><button class="secondary" id="endSessionBtn" disabled>Finish lecture</button></div>
+      <p id="sessionStatus" class="muted">Start a lecture before scanning.</p>
+    </article>
+    <article class="card scanner-card">
+      <div class="section-heading"><h3>QR scanner</h3><span id="scanCount" class="badge neutral">0 scanned</span></div>
+      <div id="reader"><div class="camera-placeholder">Camera preview will appear here.</div></div>
+      <div class="toolbar"><button class="primary" id="startCameraBtn" disabled>Start camera</button><button class="secondary" id="stopCameraBtn" disabled>Stop camera</button></div>
+      <div id="scanResult" class="scan-result" aria-live="polite">Waiting for a scan…</div>
+    </article>
+    <article class="card"><h3>Recently scanned</h3><div id="recentScans" class="recent-list muted">No students scanned yet.</div></article>
+  </section>
+
+  <section id="reports" class="panel">
+    <div class="section-heading"><div><p class="eyebrow">RECORDS</p><h2>Attendance reports</h2></div><button class="secondary" id="exportAllBtn">Export all CSV</button></div>
+    <div class="card"><label>Select lecture<select id="reportSession"></select></label><div class="stats compact"><article class="stat-card"><span>Present</span><strong id="reportPresent">0</strong></article><article class="stat-card"><span>Absent</span><strong id="reportAbsent">0</strong></article><article class="stat-card"><span>Rate</span><strong id="reportRate">0%</strong></article></div><div class="toolbar"><button class="primary" id="exportReportBtn">Download lecture CSV</button></div></div>
+    <div id="reportTable" class="card table-wrap">No lectures yet.</div>
+  </section>
+
+  <section id="settings" class="panel">
+    <div class="section-heading"><div><p class="eyebrow">PREFERENCES</p><h2>Settings & backup</h2></div></div>
+    <article class="card">
+      <h3>Local backup</h3><p class="muted">Your data is stored on this device. Export a backup regularly, especially before clearing Safari website data or changing phones.</p>
+      <div class="toolbar"><button class="primary" id="backupBtn">Download backup</button><label class="file-button">Restore backup<input type="file" id="restoreBackup" accept=".json,application/json"></label></div>
+    </article>
+    <article class="card">
+      <h3>Optional cloud sync (Supabase)</h3>
+      <p class="muted">Set up a Supabase project to sync between devices. Use a private project and enable email/password sign-in. Follow SETUP.md for the database and security policies.</p>
+      <label>Supabase project URL<input id="supabaseUrl" placeholder="https://your-project.supabase.co"></label>
+      <label>Supabase anon/publishable key<input id="supabaseKey" placeholder="Public anon/publishable key"></label>
+      <div class="toolbar"><button class="secondary" id="saveCloudBtn">Save connection</button><button class="primary" id="signInBtn">Sign in / create account</button><button class="secondary" id="syncBtn">Sync now</button><button class="text-button" id="signOutBtn">Sign out</button></div>
+      <p id="cloudStatus" class="muted">Cloud sync not configured. Offline/local mode is ready.</p>
+    </article>
+    <article class="card"><h3>Important iPhone notes</h3><ul class="steps"><li>Install this app from its HTTPS website using Safari → Share → Add to Home Screen.</li><li>Open it once while online so the app and scanner library can be cached.</li><li>Allow camera access when Safari asks. Camera scanning requires HTTPS.</li><li>Offline scanning depends on the scanner library having been cached during the first online visit.</li></ul></article>
+  </section>
+</main>
+<footer>QR Attendance · Local-first attendance manager</footer>
+<div id="toast" class="toast" role="status"></div>
+
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="app.js"></script>
+</body>
+</html>
